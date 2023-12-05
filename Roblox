@@ -80,6 +80,7 @@ getgenv().GetClosestPlayer = function()
 end 
 
 getgenv().Highlight = function(Model)
+    if not Model then return end
     if not Model:IsA("Model") then return end 
 
     local Highlight = Instance.new("Highlight")
@@ -100,6 +101,7 @@ end
 
 getgenv().ESP = function()
     PlayerAdded["Highlight"] = function(Player)
+        Highlight(Player.Character)
         Player.CharacterAdded:Connect(function(Character)
             Highlight(Character)
         end)
