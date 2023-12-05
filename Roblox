@@ -1,0 +1,66 @@
+getgenv().Players = cloneref(game:GetService("Players"))
+getgenv().Player = cloneref(Players.LocalPlayer)
+getgenv().Character = cloneref(Player.Character or Player.CharacterAdded:Wait())
+getgenv().HumanoidRootPart = cloneref(Character:WaitForChild("HumanoidRootPart"))
+
+Player.CharacterAdded:Connect(function(Char)
+    Character = cloneref(Char) 
+    HumanoidRootPart = cloneref(Character:WaitForChild("HumanoidRootPart"))
+end)
+
+getgenv().WorldToViewportPoint = function(...)
+    return workspace.CurrentCamera:WorldToViewportPoint(...)
+end 
+
+getgenv().GetMouse = function()
+    local lMouse = cloneref(Player:GetMouse())
+    return Vector2.new(lMouse.X, lMouse.Y)
+end 
+
+getgenv().GetClosestPlayerToMouse = function()
+    local Response = {nil, 99e99}
+    for i,v in next, Players:GetPlayers() do 
+        if v == LocalPlayer then continue end 
+        v = v.Character 
+        if not v then continue end 
+        local vHead = v:FindFirstChild("Head")
+        local vHumanoid = v:FindFirstChild("Humanoid")
+        if (not vHead) or (not vHumanoid) or (not (vHumanoid.Health > 0)) then continue end 
+        local Position, Visible = WorldToViewportPoint(vHead.Position)
+        if not Visible then 
+            local vHumanoidRootPart = v:FindFirstChild("HumanoidRootPart")
+            if not vHumanoidRootPart then continue end 
+            local Position1, Visible1 = WorldToViewportPoint(vHumanoidRootPart.Position)
+            if not Visible1 then continue end 
+            Visible = Visible1 
+            Position = Position1 
+            vHead = vHumanoidRootPart 
+        end 
+        Position = Vector2.new(Position.X, Position.Y)
+        local MousePosition = GetMouse()
+        local Magnitude = (MousePosition - Position).Magnitude 
+        if Magnitude < Response[2] then 
+            Response[2] = Magnitude 
+            Response[1] = vHead
+        end 
+    end 
+    return Response[1]
+end 
+
+getgenv().GetClosestPlayer = function()
+    local Response = {nil, 99e99}
+    for i,v in next, Players:GetPlayers() do 
+        if v == Player then continue end 
+        v = v.Character 
+        if not v then continue end 
+        local vHumanoidRootPart = v:FindFirstChild("HumanoidRootPart")
+        local vHumanoid = v:FindFirstChild("Humanoid")
+        if (not vHumanoidRootPart) or (not vHumanoid) or (not (vHumanoid.Health > 0)) then continue end 
+        local Magnitude = (vHumanoidRootPart.Position - HumanoidRootPart.Position).Magnitude 
+        if Magnitude < Response[2] then 
+            Response[2] = Magnitude 
+            Response[1] = vHumanoidRootPart
+        end 
+    end 
+    return Response[1]
+end 
