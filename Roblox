@@ -86,7 +86,7 @@ getgenv().Highlight = function(Model)
     local Highlight = Instance.new("Highlight")
     Highlight.Adornee = Model 
     Highlight.Parent = HUI 
-    Highlight.HighlightDepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
     Highlight.Enabled = true 
     Highlight.FillColor = Colors["Black"]
     Highlight.FillTransparency = 0
@@ -109,6 +109,10 @@ getgenv().ESP = function()
 
     PlayerRemoving["Highlight"] = function(Player)
         Player:Destroy() -- destroy all connections
+    end 
+
+    for i,v in next, Players:GetPlayers() do 
+        PlayerAdded["Highlight"](v)    
     end 
 end 
 
