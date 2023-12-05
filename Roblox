@@ -16,6 +16,7 @@ getgenv().Colors = {
     ["Red"] = Color3.fromRGB(255, 0, 0),
     ["Green"] = Color3.fromRGB(0, 255, 0),
     ["Blue"] = Color3.fromRGB(0, 0, 255),
+    ["White"] = Color3.fromRGB(255, 255, 255)
 }
 getgenv().AllPlayers = {}
 
@@ -98,7 +99,10 @@ for i = 1, 32 do -- max highlights because roblox is autistic
 end 
 
 local ESPToggle = false 
-getgenv().HighlightESP = function()
+getgenv().HighlightESP = function(Color)
+    if Color then 
+        for i,v in next, Highlights do v.OutlineColor = Colors[Color] or Colors["Red"] end
+    end 
     ESPToggle = not ESPToggle
 end 
 
