@@ -1,5 +1,6 @@
 getgenv().Players = cloneref(game:GetService("Players"))
 getgenv().ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
+getgenv().RunService = cloneref(game:GetService("RunService"))
 getgenv().Player = cloneref(Players.LocalPlayer)
 getgenv().Character = cloneref(Player.Character or Player.CharacterAdded:Wait())
 getgenv().HumanoidRootPart = cloneref(Character:WaitForChild("HumanoidRootPart"))
@@ -16,6 +17,7 @@ getgenv().Colors = {
     ["Green"] = Color3.fromRGB(0, 255, 0),
     ["Blue"] = Color3.fromRGB(0, 0, 255),
 }
+getgenv().AllPlayers = {}
 
 Player.CharacterAdded:Connect(function(Char)
     Character = cloneref(Char) 
@@ -33,8 +35,8 @@ end
 
 getgenv().GetClosestPlayerToMouse = function()
     local Response = {nil, 99e99}
-    for i,v in next, Players:GetPlayers() do 
-        if v == LocalPlayer then continue end 
+    for i,v in next, AllPlayers do 
+        if compareinstances(v, Player) then continue end 
         v = v.Character 
         if not v then continue end 
         local vHead = v:FindFirstChild("Head")
@@ -63,8 +65,8 @@ end
 
 getgenv().GetClosestPlayer = function()
     local Response = {nil, 99e99}
-    for i,v in next, Players:GetPlayers() do 
-        if v == Player then continue end 
+    for i,v in next, AllPlayers do 
+        if compareinstances(v, Player) then continue end 
         v = v.Character 
         if not v then continue end 
         local vHumanoidRootPart = v:FindFirstChild("HumanoidRootPart")
@@ -79,12 +81,11 @@ getgenv().GetClosestPlayer = function()
     return Response[1]
 end 
 
-getgenv().Highlight = function(Model)
-    if not Model then return end
-    if not Model:IsA("Model") then return end 
+getgenv().Highlights = {}
+getgenv().Highlighted = {}
 
+for i = 1, 32 do -- max highlights because roblox is autistic
     local Highlight = Instance.new("Highlight")
-    Highlight.Adornee = Model 
     Highlight.Parent = HUI 
     Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
     Highlight.Enabled = true 
@@ -93,37 +94,65 @@ getgenv().Highlight = function(Model)
     Highlight.OutlineColor = Colors["Red"]
     Highlight.OutlineTransparency = 0
 
-    Highlight:GetPropertyChangedSignal("Adornee"):Connect(function()
-        Highlight:Destroy() 
-        Highlight = nil
-    end)
+    Highlights[#Highlights + 1] = Highlight 
 end 
 
-getgenv().ESP = function()
-    PlayerAdded["Highlight"] = function(Player)
-        Highlight(Player.Character)
-        Player.CharacterAdded:Connect(function(Character)
-            Highlight(Character)
-        end)
-    end 
+local ESPToggle = false 
+getgenv().HighlightESP = function()
+    ESPToggle = not ESPToggle
+end 
 
-    PlayerRemoving["Highlight"] = function(Player)
-        Player:Destroy() -- destroy all connections
-    end 
-
-    for i,v in next, Players:GetPlayers() do 
-        PlayerAdded["Highlight"](v)    
+getgenv().AssignHighlight = function(Model)
+    if Highlighted[Model.Name] then return end 
+    for i,v in next, Highlights do 
+        if not v.Adornee then 
+            print("Assigned Highlight To", Model)
+            Highlighted[Model.Name] = v
+            v.Adornee = Model 
+            break 
+        end 
     end 
 end 
+
+getgenv().RemoveHighlight = function(Model)
+    local Found = Highlighted[Model.Name]
+    if not Found then return end 
+    Found.Adornee = nil 
+    Highlighted[Model.Name] = nil 
+end 
+
+for i,v in next, Players:GetPlayers() do 
+    table.insert(AllPlayers, v)
+end
 
 Players.PlayerAdded:Connect(function(Player)
-    for i,v in next, PlayerAdded do 
-        v(Player)
-    end 
+    table.insert(AllPlayers, Player)
 end)
 
 Players.PlayerRemoving:Connect(function(Player)
-    for i,v in next, PlayerRemoving do 
-        v(Player)
+    for i,v in next, AllPlayers do 
+        if v == Player then 
+            RemoveHighlight(Player)
+            table.remove(AllPlayers, i)
+        end 
     end 
 end)
+
+RunService.RenderStepped:Connect(function()
+    if ESPToggle then 
+        for i,v in next, AllPlayers do 
+            if compareinstances(v, Player) then continue end 
+            v = v.Character 
+            if not v then continue end 
+            local vHead = v:FindFirstChild("Head")
+            local vHumanoid = v:FindFirstChild("Humanoid")
+            if (not vHead) or (not vHumanoid) or (not (vHumanoid.Health > 0)) then continue end 
+            local Position, Visible = WorldToViewportPoint(vHead.Position)
+            if Visible then 
+                AssignHighlight(v)
+            else 
+                RemoveHighlight(v)
+            end 
+        end 
+    end 
+end) 
