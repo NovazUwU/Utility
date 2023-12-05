@@ -118,7 +118,7 @@ Players.PlayerAdded:Connect(function(Player)
     end 
 end)
 
-Player.PlayerRemoving:Connect(function(Player)
+Players.PlayerRemoving:Connect(function(Player)
     for i,v in next, PlayerRemoving do 
         v(Player)
     end 
