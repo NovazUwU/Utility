@@ -1,7 +1,21 @@
 getgenv().Players = cloneref(game:GetService("Players"))
+getgenv().ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
 getgenv().Player = cloneref(Players.LocalPlayer)
 getgenv().Character = cloneref(Player.Character or Player.CharacterAdded:Wait())
 getgenv().HumanoidRootPart = cloneref(Character:WaitForChild("HumanoidRootPart"))
+getgenv().Callbacks = {
+    ["PlayerAdded"] = {},
+    ["PlayerRemoving"] = {}
+}
+getgenv().PlayerAdded = Callbacks["PlayerAdded"]
+getgenv().PlayerRemoving = Callbacks["PlayerRemoving"]
+getgenv().HUI = gethui()
+getgenv().Colors = {
+    ["Black"] = Color3.fromRGB(0, 0, 0),
+    ["Red"] = Color3.fromRGB(255, 0, 0),
+    ["Green"] = Color3.fromRGB(0, 255, 0),
+    ["Blue"] = Color3.fromRGB(0, 0, 255),
+}
 
 Player.CharacterAdded:Connect(function(Char)
     Character = cloneref(Char) 
@@ -64,3 +78,46 @@ getgenv().GetClosestPlayer = function()
     end 
     return Response[1]
 end 
+
+getgenv().Highlight = function(Model)
+    if not Model:IsA("Model") then return end 
+
+    local Highlight = Instance.new("Highlight")
+    Highlight.Adornee = Model 
+    Highlight.Parent = HUI 
+    Highlight.HighlightDepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    Highlight.Enabled = true 
+    Highlight.FillColor = Colors["Black"]
+    Highlight.FillTransparency = 0
+    Highlight.OutlineColor = Colors["Red"]
+    Highlight.OutlineTransparency = 0
+
+    Highlight:GetPropertyChangedSignal("Adornee"):Connect(function()
+        Highlight:Destroy() 
+        Highlight = nil
+    end)
+end 
+
+getgenv().ESP = function()
+    PlayerAdded["Highlight"] = function(Player)
+        Player.CharacterAdded:Connect(function(Character)
+            Highlight(Character)
+        end)
+    end 
+
+    PlayerRemoving["Highlight"] = function(Player)
+        Player:Destroy() -- destroy all connections
+    end 
+end 
+
+Players.PlayerAdded:Connect(function(Player)
+    for i,v in next, PlayerAdded do 
+        v(Player)
+    end 
+end)
+
+Player.PlayerRemoving:Connect(function(Player)
+    for i,v in next, PlayerRemoving do 
+        v(Player)
+    end 
+end)
