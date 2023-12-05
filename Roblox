@@ -106,7 +106,6 @@ getgenv().AssignHighlight = function(Model)
     if Highlighted[Model.Name] then return end 
     for i,v in next, Highlights do 
         if not v.Adornee then 
-            print("Assigned Highlight To", Model)
             Highlighted[Model.Name] = v
             v.Adornee = Model 
             break 
