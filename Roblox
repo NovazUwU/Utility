@@ -4,6 +4,7 @@ getgenv().RunService = cloneref(game:GetService("RunService"))
 getgenv().Player = cloneref(Players.LocalPlayer)
 getgenv().Character = cloneref(Player.Character or Player.CharacterAdded:Wait())
 getgenv().HumanoidRootPart = cloneref(Character:WaitForChild("HumanoidRootPart"))
+getgenv().UpperTorso = cloneref(Character:WaitForChild("UpperTorso"))
 getgenv().Callbacks = {
     ["PlayerAdded"] = {},
     ["PlayerRemoving"] = {}
@@ -23,6 +24,7 @@ getgenv().AllPlayers = {}
 Player.CharacterAdded:Connect(function(Char)
     Character = cloneref(Char) 
     HumanoidRootPart = cloneref(Character:WaitForChild("HumanoidRootPart"))
+    UpperTorso = cloneref(Character:WaitForChild("UpperTorso"))
 end)
 
 getgenv().WorldToViewportPoint = function(...)
