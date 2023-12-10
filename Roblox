@@ -1,10 +1,13 @@
+getgenv().R16 = R16 or true 
 getgenv().Players = cloneref(game:GetService("Players"))
 getgenv().ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
 getgenv().RunService = cloneref(game:GetService("RunService"))
 getgenv().Player = cloneref(Players.LocalPlayer)
 getgenv().Character = cloneref(Player.Character or Player.CharacterAdded:Wait())
 getgenv().HumanoidRootPart = cloneref(Character:WaitForChild("HumanoidRootPart"))
-getgenv().UpperTorso = cloneref(Character:WaitForChild("UpperTorso"))
+if R16 then 
+    getgenv().UpperTorso = cloneref(Character:WaitForChild("UpperTorso"))
+end 
 getgenv().Callbacks = {
     ["PlayerAdded"] = {},
     ["PlayerRemoving"] = {}
@@ -24,7 +27,9 @@ getgenv().AllPlayers = {}
 Player.CharacterAdded:Connect(function(Char)
     Character = cloneref(Char) 
     HumanoidRootPart = cloneref(Character:WaitForChild("HumanoidRootPart"))
-    UpperTorso = cloneref(Character:WaitForChild("UpperTorso"))
+    if R16 then 
+        UpperTorso = cloneref(Character:WaitForChild("UpperTorso"))
+    end 
 end)
 
 getgenv().WorldToViewportPoint = function(...)
