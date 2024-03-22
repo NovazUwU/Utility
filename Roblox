@@ -2,6 +2,7 @@ local R5 = ...
 getgenv().Players = cloneref(game:GetService("Players"))
 getgenv().ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
 getgenv().RunService = cloneref(game:GetService("RunService"))
+getgenv().HttpService = cloneref(game:GetService("HttpService"))
 getgenv().Player = cloneref(Players.LocalPlayer)
 getgenv().Character = cloneref(Player.Character or Player.CharacterAdded:Wait())
 getgenv().HumanoidRootPart = cloneref(Character:WaitForChild("HumanoidRootPart"))
