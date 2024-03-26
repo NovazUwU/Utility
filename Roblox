@@ -6,6 +6,7 @@ getgenv().HttpService = cloneref(game:GetService("HttpService"))
 getgenv().Player = cloneref(Players.LocalPlayer)
 getgenv().Character = cloneref(Player.Character or Player.CharacterAdded:Wait())
 getgenv().HumanoidRootPart = cloneref(Character:WaitForChild("HumanoidRootPart"))
+getgenv().Humanoid = cloneref(Character:WaitForChild("Humanoid"))
 if not R5 then 
     getgenv().UpperTorso = cloneref(Character:WaitForChild("UpperTorso"))
 end 
@@ -28,6 +29,7 @@ getgenv().AllPlayers = {}
 Player.CharacterAdded:Connect(function(Char)
     Character = cloneref(Char) 
     HumanoidRootPart = cloneref(Character:WaitForChild("HumanoidRootPart"))
+    Humanoid = cloneref(Character:WaitForChild("Humanoid"))
     if not R5 then
         UpperTorso = cloneref(Character:WaitForChild("UpperTorso"))
     end 
